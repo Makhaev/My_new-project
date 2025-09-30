@@ -8,21 +8,17 @@ import (
 	"main.go/models"
 )
 
-// шаг
-// Иницилизация базы данных
-// создается соеденение Sqlite
-
 var DB *gorm.DB
 
 func Init() {
 	var err error
 	DB, err = gorm.Open(sqlite.Open("gopher.db"), &gorm.Config{})
 	if err != nil {
-		log.Fatal("failed to connect database")
+		log.Fatalf("failed to connect database: %v", err)
 	}
 
 	err = DB.AutoMigrate(&models.User{})
 	if err != nil {
-		log.Fatal("failed to migrate database")
+		log.Fatalf("failed to migrate database: %v", err)
 	}
 }
