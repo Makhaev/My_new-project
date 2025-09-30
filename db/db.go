@@ -15,8 +15,8 @@ import (
 var DB *gorm.DB
 
 func Init() {
-
-	DB, err := gorm.Open(sqlite.Open("gopher.db"), &gorm.Config{})
+	var err error
+	DB, err = gorm.Open(sqlite.Open("gopher.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to connect database")
 	}
