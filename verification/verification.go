@@ -70,8 +70,8 @@ func Verification(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{
-		"status":        "verified",
-		"access_token":  token,
-		"refresh_token": refreshToken,
+		"status":  "verified",
+		"access":  token,
+		"refresh": refreshToken,
 	})
 }
