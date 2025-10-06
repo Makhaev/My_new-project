@@ -57,7 +57,7 @@ func (u *UserStoreInfo) CreateUser() error {
 	`
 
 	_, err := db.DB.Exec(query,
-		u.Username,
+		u.StorePhone, // вместо u.Username
 		u.Username,
 		u.FirstName,
 		u.LastName,
@@ -86,7 +86,7 @@ func GetUserByPhone(phone string) (*UserStoreInfo, error) {
 	var user UserStoreInfo
 	err := row.Scan(
 		&user.ID,
-		&user.Username,
+		&user.StorePhone, // сюда phone
 		&user.Username,
 		&user.FirstName,
 		&user.LastName,
