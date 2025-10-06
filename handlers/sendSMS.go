@@ -29,11 +29,12 @@ func SendSMS(w http.ResponseWriter, r *http.Request) {
 	code := generathion.GenarathionCode(6)
 	expiresAt := time.Now().Add(5 * time.Minute)
 
-	query := `INSERT INTO sms_codes(phone,code) VALUES(?,?)`
-
+	query := `INSERT INTO sms_codes(phone, code, expires_at) VALUES(?, ?, ?)`
 	_, err := db.DB.Exec(query, req.Phone, code, expiresAt)
 	if err != nil {
-		http.Error(w, "Ошибка сохранение в базу данных", http.StatusBadRequest)
+		fmt.Println("Ошибка записи SMS:", err)
+		http.Error(w, "Ошибка сохранения в базу данных", http.StatusBadRequest)
+		return
 	}
 
 	// apiKey := "WGZT693J3OWKRM8W47DPS275631Y45SS3V4TPA9J88U1QAS7572C41F53QIEO4OK"
