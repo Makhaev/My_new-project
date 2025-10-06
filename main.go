@@ -27,7 +27,7 @@ func main() {
 
 	r.Post("/send_code/", handlers.SendSMS)
 	r.Post("/verify_code/", verification.Verification)
-	r.Get("me/", profile.Profile)
+	r.Get("/me/", profile.Profile)
 
 	r.Group(func(protected chi.Router) {
 		protected.Use(middalware.AuthMidalware)
