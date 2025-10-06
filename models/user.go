@@ -86,8 +86,8 @@ func GetUserByPhone(phone string) (*UserStoreInfo, error) {
 	var user UserStoreInfo
 	err := row.Scan(
 		&user.ID,
+		&user.StorePhone, // phone
 		&user.Username,
-		&user.Username, // или phone — если разделишь поля
 		&user.FirstName,
 		&user.LastName,
 		&user.StoreName,
