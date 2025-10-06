@@ -36,5 +36,17 @@ func Init() {
 	}
 
 	fmt.Println("База данных успешно подключена")
+	createdRefreshTable := `
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	phone TEXT NOT NULL,
+	token TEXT NOT NULL,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);`
+
+	_, err = DB.Exec(createdRefreshTable)
+	if err != nil {
+		log.Fatalf("Ошибка создания таблицы refresh_tokens: %v", err)
+	}
 
 }

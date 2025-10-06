@@ -4,12 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"main.go/db"
 	"main.go/generathionToken"
-	"main.go/models"
 )
 
 type VerifyRequest struct {
@@ -56,24 +54,24 @@ func Verification(w http.ResponseWriter, r *http.Request) {
 
 	token, err := generathionToken.GenerateToken(req.Phone)
 	if err != nil {
-		fmt.Println("Ошибка генерации токена:", err)
 		http.Error(w, `{"error":"Ошибка генерации токена"}`, http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Println("✅ Токен успешно создан:", token)
-
-	user := models.UserStoreInfo{StorePhone: req.Phone}
-	if err := user.CreateUser(); err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-		fmt.Println("Ошибка при создании пользователя:", err)
-		http.Error(w, `{"error":"Ошибка создания пользователя"}`, http.StatusInternalServerError)
+	refreshToken, err := generathionToken.GenerateRefreshToken(req.Phone)
+	if err != nil {
+		http.Error(w, `{"error":"Ошибка генерации refresh токена"}`, http.StatusInternalServerError)
 		return
 	}
 
+	fmt.Println("✅ Access:", token)
+	fmt.Println("✅ Refresh:", refreshToken)
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(VerifyResponse{
-		Status: "verified",
-		Token:  token,
+	json.NewEncoder(w).Encode(map[string]string{
+		"status":        "verified",
+		"access_token":  token,
+		"refresh_token": refreshToken,
 	})
 }
