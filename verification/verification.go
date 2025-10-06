@@ -2,7 +2,9 @@ package verification
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"main.go/db"
@@ -14,10 +16,11 @@ type VerifyRequest struct {
 	Phone string `json:"phone"`
 	Code  string `json:"code"`
 }
+
 type VerifyResponse struct {
 	Status string `json:"status,omitempty"`
 	Error  string `json:"error,omitempty"`
-	Token  string `json:"token"`
+	Token  string `json:"token,omitempty"`
 }
 
 func Verification(w http.ResponseWriter, r *http.Request) {
@@ -31,24 +34,20 @@ func Verification(w http.ResponseWriter, r *http.Request) {
 
 	var createdAt time.Time
 
-	// Получаем время создания кода
 	query := `SELECT created_at FROM sms_codes WHERE phone = ? AND code = ? ORDER BY created_at DESC LIMIT 1`
 	err := db.DB.QueryRow(query, req.Phone, req.Code).Scan(&createdAt)
 	if err != nil {
-		// код не найден
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(VerifyResponse{Error: "Неверный код"})
 		return
 	}
 
-	// Проверка: не истёк ли срок действия (больше 5 минут)
 	if time.Since(createdAt) > 5*time.Minute {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(VerifyResponse{Error: "Код истёк"})
 		return
 	}
 
-	// Удаляем использованный код
 	_, err = db.DB.Exec("DELETE FROM sms_codes WHERE phone = ? AND code = ?", req.Phone, req.Code)
 	if err != nil {
 		http.Error(w, `{"error":"Ошибка удаления кода"}`, http.StatusInternalServerError)
@@ -57,17 +56,22 @@ func Verification(w http.ResponseWriter, r *http.Request) {
 
 	token, err := generathionToken.GenerateToken(req.Phone)
 	if err != nil {
+		fmt.Println("Ошибка генерации токена:", err)
 		http.Error(w, `{"error":"Ошибка генерации токена"}`, http.StatusInternalServerError)
 		return
 	}
 
-	user := models.UserStoreInfo{
-		StorePhone: req.Phone,
+	fmt.Println("✅ Токен успешно создан:", token)
+
+	user := models.UserStoreInfo{StorePhone: req.Phone}
+	if err := user.CreateUser(); err != nil && !strings.Contains(err.Error(), "UNIQUE") {
+		fmt.Println("Ошибка при создании пользователя:", err)
+		http.Error(w, `{"error":"Ошибка создания пользователя"}`, http.StatusInternalServerError)
+		return
 	}
 
-	user.CreateUser()
-	// Возвращаем успешный ответ
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(VerifyResponse{
 		Status: "verified",
 		Token:  token,
