@@ -1,24 +1,40 @@
 package db
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-	"main.go/models"
+	_ "github.com/mattn/go-sqlite3"
 )
 
-var DB *gorm.DB
+var DB *sql.DB
 
 func Init() {
 	var err error
-	DB, err = gorm.Open(sqlite.Open("gopher.db"), &gorm.Config{})
+	DB, err = sql.Open("sqlite3", "gofer.db")
 	if err != nil {
-		log.Fatalf("failed to connect database: %v", err)
+		log.Fatalf("Ошибка подключения к базе данных: %v", err)
 	}
 
-	err = DB.AutoMigrate(&models.User{})
-	if err != nil {
-		log.Fatalf("failed to connect database: %v", err)
+	if err = DB.Ping(); err != nil {
+		log.Fatalf("Ошибка пинга базы данных: %v", err)
 	}
+
+	createdDB := `
+	CREATE TABLE IF NOT EXISTS sms_codes (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		phone TEXT NOT NULL,
+		code TEXT NOT NULL,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		expires_at DATETIME
+	);`
+
+	_, err = DB.Exec(createdDB)
+	if err != nil {
+		log.Fatalf("Ошибка создания таблицы: %v", err)
+	}
+
+	fmt.Println("База данных успешно подключена")
+
 }

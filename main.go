@@ -1,29 +1,36 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	_ "github.com/mattn/go-sqlite3"
+	"log"
+	"net/http"
+
+	"github.com/go-chi/chi"
+	"github.com/joho/godotenv"
 	"main.go/db"
 	"main.go/handlers"
-	"main.go/utils"
+	"main.go/middalware"
+	"main.go/verification"
 )
 
 func main() {
-	// 👇 Важно: инициализируем базу данных
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Ошибка загрузки .env файла")
+	}
 	db.Init()
+	r := chi.NewRouter()
 
-	// Роутер
-	r := gin.Default()
+	r.Post("/send_code/", handlers.SendSMS)
+	r.Post("/verify_code/", verification.Verification)
 
-	// Роуты
-	r.POST("/token/", handlers.Login)
-	r.POST("/register/", handlers.Register)
+	r.Group(func(protected chi.Router) {
+		protected.Use(middalware.AuthMidalware)
+		protected.Get("/user/profile", middalware.ProtectedHandler)
+	})
 
-	// Защищённый роут
-	protected := r.Group("/user")
-	protected.Use(utils.AuthMiddleware())
-	protected.GET("/profile/", handlers.GetProfile)
+	err = http.ListenAndServe(":8082", r)
+	if err != nil {
+		log.Fatalf("Ошибка :%v", err)
+	}
 
-	// Старт сервера
-	r.Run(":8080")
 }
