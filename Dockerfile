@@ -22,5 +22,5 @@ ENV SMS_API_KEY="changeme"
 # Открытие порта
 EXPOSE 8082
 
-# Запуск приложения
+
 CMD ["./server"]
