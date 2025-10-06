@@ -47,7 +47,7 @@ func SendSMS(w http.ResponseWriter, r *http.Request) {
 
 	req.Text = fmt.Sprintln("Ваш код авторизации ", code)
 	fmt.Println("код отправлен ", req.Text)
-	if req.Phone != "89659628225" {
+	if req.Phone != "+79659628225" {
 		encodedText := url.QueryEscape(req.Text)
 		smsURL := fmt.Sprintf(
 			"http://smspilot.ru/api.php?send=%s&to=%s&from=%s&apikey=%s&format=json",
