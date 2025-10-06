@@ -28,13 +28,12 @@ func main() {
 
 	r.Post("/send_code/", handlers.SendSMS)
 	r.Post("/verify_code/", verification.Verification)
-	r.Get("/me/", profile.Profile)
 
 	r.Group(func(protected chi.Router) {
 		protected.Use(middalware.AuthMidalware)
+		protected.Get("/me/", profile.Profile)
 		protected.Get("/user/profile", middalware.ProtectedHandler)
 	})
-
 	err = http.ListenAndServe(":8082", r)
 	if err != nil {
 		log.Fatalf("Ошибка :%v", err)
