@@ -28,6 +28,7 @@ func main() {
 
 	r.Post("/send_code/", handlers.SendSMS)
 	r.Post("/verify_code/", verification.Verification)
+	r.Post("/refresh_token/", verification.RefreshToken)
 
 	r.Group(func(protected chi.Router) {
 		protected.Use(middalware.AuthMidalware)
