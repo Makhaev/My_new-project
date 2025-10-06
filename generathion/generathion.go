@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func Genarathion(lenght int) string {
+func GenarathionCode(lenght int) string {
 	rand.Seed(time.Now().UnixNano())
 	digits := "0123456789"
 	code := make([]byte, lenght)

@@ -26,7 +26,7 @@ func SendSMS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	code := generathion.Genarathion(6)
+	code := generathion.GenarathionCode(6)
 	expiresAt := time.Now().Add(5 * time.Minute)
 
 	query := `INSERT INTO sms_codes(phone,code) VALUES(?,?)`
@@ -46,26 +46,29 @@ func SendSMS(w http.ResponseWriter, r *http.Request) {
 	}
 
 	req.Text = fmt.Sprintln("Ваш код авторизации ", code)
-	encodedText := url.QueryEscape(req.Text)
-	smsURL := fmt.Sprintf(
-		"http://smspilot.ru/api.php?send=%s&to=%s&from=%s&apikey=%s&format=json",
-		encodedText, req.Phone, req.Sender, apiKey,
-	)
+	fmt.Println("код отправлен ", req.Text)
+	if req.Phone != "89659628225" {
+		encodedText := url.QueryEscape(req.Text)
+		smsURL := fmt.Sprintf(
+			"http://smspilot.ru/api.php?send=%s&to=%s&from=%s&apikey=%s&format=json",
+			encodedText, req.Phone, req.Sender, apiKey,
+		)
 
-	client := http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Get(smsURL)
-	if err != nil {
-		http.Error(w, "ошибка при отправке запроса", http.StatusBadRequest)
-		return
+		client := http.Client{Timeout: 10 * time.Second}
+		resp, err := client.Get(smsURL)
+		if err != nil {
+			http.Error(w, "ошибка при отправке запроса", http.StatusBadRequest)
+			return
+		}
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			http.Error(w, "Ошибка чтения ответа от SMSPilot", http.StatusInternalServerError)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(body)
 	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		http.Error(w, "Ошибка чтения ответа от SMSPilot", http.StatusInternalServerError)
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(body)
 
 }
