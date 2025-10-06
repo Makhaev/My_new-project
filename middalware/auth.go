@@ -11,7 +11,7 @@ import (
 
 type contextKey string
 
-const userIDKey contextKey = "userID"
+const UserIDKey contextKey = "userID"
 
 func AuthMidalware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -29,13 +29,13 @@ func AuthMidalware(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), userIDKey, claims.UserID)
+		ctx := context.WithValue(r.Context(), UserIDKey, claims.UserID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
 func ProtectedHandler(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(userIDKey)
+	userID := r.Context().Value(UserIDKey)
 	fmt.Println(userID)
 
 	if userID == nil {

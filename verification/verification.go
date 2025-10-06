@@ -7,6 +7,7 @@ import (
 
 	"main.go/db"
 	"main.go/generathionToken"
+	"main.go/models"
 )
 
 type VerifyRequest struct {
@@ -60,6 +61,11 @@ func Verification(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user := models.UserStoreInfo{
+		StorePhone: req.Phone,
+	}
+
+	user.CreateUser()
 	// Возвращаем успешный ответ
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(VerifyResponse{

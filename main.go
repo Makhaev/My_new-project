@@ -9,6 +9,8 @@ import (
 	"main.go/db"
 	"main.go/handlers"
 	"main.go/middalware"
+	"main.go/models"
+	"main.go/profile"
 	"main.go/verification"
 )
 
@@ -18,10 +20,14 @@ func main() {
 		log.Fatal("Ошибка загрузки .env файла")
 	}
 	db.Init()
+
+	models.CreateUsers()
+
 	r := chi.NewRouter()
 
 	r.Post("/send_code/", handlers.SendSMS)
 	r.Post("/verify_code/", verification.Verification)
+	r.Get("me/", profile.Profile)
 
 	r.Group(func(protected chi.Router) {
 		protected.Use(middalware.AuthMidalware)
