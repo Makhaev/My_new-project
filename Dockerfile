@@ -1,26 +1,27 @@
 FROM golang:1.21-alpine
 
-# Установка зависимостей
-RUN apk add --no-cache git
+# Установим зависимости для CGO и SQLite
+RUN apk add --no-cache git gcc musl-dev sqlite-dev
 
-# Создание директории для приложения
+# Включаем CGO
+ENV CGO_ENABLED=1
+ENV GOOS=linux
+ENV GOARCH=amd64
+
 WORKDIR /app
 
 # Копируем go.mod и go.sum
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Копируем весь исходный код
+# Копируем весь код
 COPY . .
 
-# Сборка приложения
+# Сборка
 RUN go build -o server main.go
 
-# Установка переменной окружения (можно переопределить)
-ENV SMS_API_KEY="changeme"
-
-# Открытие порта
+# Открываем порт
 EXPOSE 8082
 
-
+# Запуск
 CMD ["./server"]
