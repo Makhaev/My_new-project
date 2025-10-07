@@ -11,6 +11,7 @@ import (
 	"main.go/middalware"
 	"main.go/models"
 	"main.go/profile"
+	"main.go/update"
 	"main.go/verification"
 )
 
@@ -29,6 +30,7 @@ func main() {
 	r.Post("/send_code/", handlers.SendSMS)
 	r.Post("/verify_code/", verification.Verification)
 	r.Post("/refresh_token/", verification.RefreshToken)
+	r.Patch("me/update/", update.UpdateProfile)
 
 	r.Group(func(protected chi.Router) {
 		protected.Use(middalware.AuthMidalware)
