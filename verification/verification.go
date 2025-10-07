@@ -76,12 +76,12 @@ func Verification(w http.ResponseWriter, r *http.Request) {
 		}
 		err := newUser.CreateUser()
 		if err != nil {
-			fmt.Println("Ошибка при создании пользователя:", err)
+			fmt.Println("⚠️ Ошибка при создании пользователя:", err)
 		} else {
 			fmt.Println("Новый пользователь создан:", newUser.Username)
 		}
 	} else {
-		fmt.Println("Пользователь уже существует:", user.Username)
+		fmt.Println("ℹ️ Пользователь уже существует:", user.Username)
 	}
 
 	fmt.Println("✅ Access:", token)
