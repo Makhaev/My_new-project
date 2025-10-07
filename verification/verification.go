@@ -8,6 +8,7 @@ import (
 
 	"main.go/db"
 	"main.go/generathionToken"
+	"main.go/models"
 )
 
 type VerifyRequest struct {
@@ -46,12 +47,14 @@ func Verification(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// ✅ Удаляем использованный код
 	_, err = db.DB.Exec("DELETE FROM sms_codes WHERE phone = ? AND code = ?", req.Phone, req.Code)
 	if err != nil {
 		http.Error(w, `{"error":"Ошибка удаления кода"}`, http.StatusInternalServerError)
 		return
 	}
 
+	// ✅ Создаём access и refresh токены
 	token, err := generathionToken.GenerateToken(req.Phone)
 	if err != nil {
 		http.Error(w, `{"error":"Ошибка генерации токена"}`, http.StatusInternalServerError)
@@ -62,6 +65,23 @@ func Verification(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, `{"error":"Ошибка генерации refresh токена"}`, http.StatusInternalServerError)
 		return
+	}
+
+	// ✅ Создаём пользователя, если его ещё нет
+	user, err := models.GetUserByPhone(req.Phone)
+	if err != nil {
+		newUser := models.UserStoreInfo{
+			StorePhone: req.Phone,
+			Username:   "User_" + req.Phone[len(req.Phone)-4:], // например: User_8225
+		}
+		err := newUser.CreateUser()
+		if err != nil {
+			fmt.Println("Ошибка при создании пользователя:", err)
+		} else {
+			fmt.Println("Новый пользователь создан:", newUser.Username)
+		}
+	} else {
+		fmt.Println("Пользователь уже существует:", user.Username)
 	}
 
 	fmt.Println("✅ Access:", token)
