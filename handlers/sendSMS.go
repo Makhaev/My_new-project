@@ -45,6 +45,8 @@ func SendSMS(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	//
+
 	req.Text = fmt.Sprintln("Ваш код авторизации ", code)
 	fmt.Println("код отправлен ", req.Text)
 	if req.Phone == "+79659628225" {
