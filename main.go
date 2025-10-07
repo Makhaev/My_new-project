@@ -30,11 +30,11 @@ func main() {
 	r.Post("/send_code/", handlers.SendSMS)
 	r.Post("/verify_code/", verification.Verification)
 	r.Post("/refresh_token/", verification.RefreshToken)
-	r.Patch("me/update/", update.UpdateProfile)
 
 	r.Group(func(protected chi.Router) {
 		protected.Use(middalware.AuthMidalware)
 		protected.Get("/me/", profile.Profile)
+		r.Patch("/me/update/", update.UpdateProfile)
 		protected.Get("/user/profile/", middalware.ProtectedHandler)
 	})
 	err = http.ListenAndServe(":8082", r)
