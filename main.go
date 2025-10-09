@@ -33,9 +33,10 @@ func main() {
 	r.Group(func(protected chi.Router) {
 		protected.Use(middalware.AuthMidalware)
 		protected.Get("/me/", profile.Profile)
-		r.Patch("/me/update/", update.UpdateProfile)
+		protected.Patch("/me/update/", update.UpdateProfile) // ← исправлено
 		protected.Get("/user/profile/", middalware.ProtectedHandler)
 	})
+
 	err = http.ListenAndServe(":8082", r)
 	if err != nil {
 		log.Fatalf("Ошибка :%v", err)
