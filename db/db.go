@@ -49,4 +49,24 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
 		log.Fatalf("Ошибка создания таблицы refresh_tokens: %v", err)
 	}
 
+	// Таблица для карточек
+
+	createdCategoriesTable := `
+	CREATE TABLE IF NOT EXISTS categories (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	name TEXT NOT NULL,
+	description TEXT,
+    image TEXT,
+    slug TEXT UNIQUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME
+	)
+	`
+
+	_, err = DB.Exec(createdCategoriesTable)
+
+	if err != nil {
+		log.Fatalf("Ошибка создания таблицы: %v", err)
+	}
+
 }
