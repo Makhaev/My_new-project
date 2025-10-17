@@ -1,27 +1,17 @@
-FROM golang:1.21-alpine
-
-# Установим зависимости для CGO и SQLite
-RUN apk add --no-cache git gcc musl-dev sqlite-dev
-
-# Включаем CGO
-ENV CGO_ENABLED=1
-ENV GOOS=linux
-ENV GOARCH=amd64
-
+FROM golang:1.21-alpine AS build
+RUN apk add --no-cache git build-base
 WORKDIR /app
-
-# Копируем go.mod и go.sum
 COPY go.mod go.sum ./
 RUN go mod download
-
-# Копируем весь код
 COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o server main.go
 
-# Сборка
-RUN go build -o server main.go
-
-# Открываем порт
+# final stage
+FROM gcr.io/distroless/static:nonroot
+WORKDIR /app
+COPY --from=build /app/server /app/server
+# если нужны файлы статические - копируем их
+# COPY --from=build /app/uploads /app/uploads
+USER nonroot:nonroot
 EXPOSE 8082
-
-# Запуск
-CMD ["./server"]
+CMD ["/app/server"]
