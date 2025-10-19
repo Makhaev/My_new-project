@@ -33,7 +33,7 @@ func Verification(w http.ResponseWriter, r *http.Request) {
 
 	var createdAt time.Time
 
-	query := `SELECT created_at FROM sms_codes WHERE phone = ? AND code = ? ORDER BY created_at DESC LIMIT 1`
+	query := `SELECT created_at FROM sms_codes WHERE phone = $1 AND code = $2 ORDER BY created_at DESC LIMIT 1`
 	err := db.DB.QueryRow(query, req.Phone, req.Code).Scan(&createdAt)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -48,7 +48,7 @@ func Verification(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ✅ Удаляем использованный код
-	_, err = db.DB.Exec("DELETE FROM sms_codes WHERE phone = ? AND code = ?", req.Phone, req.Code)
+	_, err = db.DB.Exec("DELETE FROM sms_codes WHERE phone = $1 AND code = $2", req.Phone, req.Code)
 	if err != nil {
 		http.Error(w, `{"error":"Ошибка удаления кода"}`, http.StatusInternalServerError)
 		return

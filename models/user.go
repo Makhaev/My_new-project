@@ -78,7 +78,7 @@ func GetUserByPhone(phone string) (*UserStoreInfo, error) {
 	query := `
 	SELECT id, phone, username, first_name, last_name, store_name, store_image,
 	       store_address, store_phone, store_code, manager_name, manager_phone, remaining_debt
-	FROM users WHERE phone = ? LIMIT 1
+	FROM users WHERE phone = $1 LIMIT 1
 	`
 
 	row := db.DB.QueryRow(query, phone)

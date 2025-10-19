@@ -29,7 +29,7 @@ func SendSMS(w http.ResponseWriter, r *http.Request) {
 	code := generathion.GenarathionCode(6)
 	expiresAt := time.Now().Add(5 * time.Minute)
 
-	query := `INSERT INTO sms_codes(phone, code, expires_at) VALUES(?, ?, ?)`
+	query := `INSERT INTO sms_codes(phone, code, expires_at) VALUES($1, $2, $3)`
 	_, err := db.DB.Exec(query, req.Phone, code, expiresAt)
 	if err != nil {
 		fmt.Println("Ошибка вставки:", err)

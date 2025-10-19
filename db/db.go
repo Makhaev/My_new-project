@@ -4,15 +4,17 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 var DB *sql.DB
 
 func Init() {
 	var err error
-	DB, err = sql.Open("sqlite3", "gofer.db")
+	dsn := os.Getenv("DATABASE_URL")
+	DB, err = sql.Open("pgx", dsn)
 	if err != nil {
 		log.Fatalf("Ошибка подключения к базе данных: %v", err)
 	}

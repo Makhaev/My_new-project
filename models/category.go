@@ -18,7 +18,7 @@ type Category struct {
 }
 
 func (c *Category) Create() (int64, error) {
-	q := `INSERT INTO categories (name, description, image, slug, created_at) VALUES (?, ?, ?, ?, ?)`
+	q := `INSERT INTO categories (name, description, image, slug, created_at) VALUES ($1, $2, $3, $4, $5)`
 	res, err := db.DB.Exec(q, c.Name, c.Description, c.Image, c.Slug, time.Now())
 	if err != nil {
 		return 0, err
@@ -27,7 +27,7 @@ func (c *Category) Create() (int64, error) {
 }
 
 func GetCategoryByID(id int) (*Category, error) {
-	q := `SELECT id, name, description, image, slug, created_at, updated_at FROM categories WHERE id = ? LIMIT 1`
+	q := `SELECT id, name, description, image, slug, created_at, updated_at FROM categories WHERE id = $1 LIMIT 1`
 	row := db.DB.QueryRow(q, id)
 	var c Category
 	err := row.Scan(&c.ID, &c.Name, &c.Description, &c.Image, &c.Slug, &c.CreatedAt, &c.UpdatedAt)
@@ -60,12 +60,12 @@ func GetAllCategories() ([]Category, error) {
 }
 
 func UpdateCategory(c *Category) error {
-	q := `UPDATE categories SET name = ?, description = ?, image = ?, slug = ?, updated_at = ? WHERE id = ?`
+	q := `UPDATE categories SET name = $1, description = $2, image = $3, slug = $4, updated_at = $5 WHERE id = $6`
 	_, err := db.DB.Exec(q, c.Name, c.Description, c.Image, c.Slug, time.Now(), c.ID)
 	return err
 }
 
 func DeleteCategory(id int) error {
-	_, err := db.DB.Exec(`DELETE FROM categories WHERE id = ?`, id)
+	_, err := db.DB.Exec(`DELETE FROM categories WHERE id = $1`, id)
 	return err
 }

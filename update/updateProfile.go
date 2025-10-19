@@ -73,8 +73,8 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	// 🧩 3. Обновляем в базе
 	query := `
 	UPDATE users
-	SET first_name = ?, last_name = ?, store_address = ?, store_image = ?
-	WHERE phone = ?
+	SET first_name = $1, last_name = $2, store_address = $3, store_image = $4
+	WHERE phone = $5
 	`
 
 	_, err := db.DB.Exec(query, firstName, lastName, storeAddress, storeImagePath, userPhone)
