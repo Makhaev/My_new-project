@@ -24,28 +24,26 @@ type UserStoreInfo struct {
 
 func CreateUsers() {
 	createUsersTable := `
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    phone TEXT UNIQUE NOT NULL,
-    username TEXT NOT NULL,
-    first_name TEXT,
-    last_name TEXT,
-    store_name TEXT,
-    store_image TEXT,
-    store_address TEXT,
-    store_phone TEXT,
-    store_code TEXT,
-    manager_name TEXT,
-    manager_phone TEXT,
-    remaining_debt TEXT
-);`
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        phone TEXT UNIQUE NOT NULL,
+        username TEXT NOT NULL,
+        first_name TEXT,
+        last_name TEXT,
+        store_name TEXT,
+        store_image TEXT,
+        store_address TEXT,
+        store_phone TEXT,
+        store_code TEXT,
+        manager_name TEXT,
+        manager_phone TEXT,
+        remaining_debt TEXT
+    );`
 
 	_, err := db.DB.Exec(createUsersTable)
-
 	if err != nil {
 		log.Fatalf("Ошибка создания таблицы users: %v", err)
 	}
-
 }
 
 func (u *UserStoreInfo) CreateUser() error {
