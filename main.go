@@ -3,10 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/go-chi/chi"
-	"github.com/joho/godotenv"
 	"main.go/db"
 	"main.go/handlers"
 	"main.go/middalware"
@@ -17,13 +15,6 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Ошибка загрузки .env файла")
-	}
-
-	log.Println("SMS_API_KEY =", os.Getenv("SMS_API_KEY"))
-	log.Println("DATABASE_URL =", os.Getenv("DATABASE_URL"))
 
 	db.Init()
 
@@ -47,7 +38,7 @@ func main() {
 		protected.Delete("/categories/{id}/", handlers.DeleteCategoryHandler)
 	})
 
-	err = http.ListenAndServe(":8082", r)
+	err := http.ListenAndServe(":8082", r)
 	if err != nil {
 		log.Fatalf("Ошибка :%v", err)
 	}
