@@ -21,6 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Ошибка загрузки .env файла")
 	}
+
 	log.Println("SMS_API_KEY =", os.Getenv("SMS_API_KEY"))
 	log.Println("DATABASE_URL =", os.Getenv("DATABASE_URL"))
 
