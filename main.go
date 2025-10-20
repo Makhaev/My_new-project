@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
@@ -20,6 +21,9 @@ func main() {
 	if err != nil {
 		log.Fatal("Ошибка загрузки .env файла")
 	}
+	log.Println("SMS_API_KEY =", os.Getenv("SMS_API_KEY"))
+	log.Println("DATABASE_URL =", os.Getenv("DATABASE_URL"))
+
 	db.Init()
 
 	models.CreateUsers()
