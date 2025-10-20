@@ -1,3 +1,4 @@
+# Stage 1: build
 FROM golang:1.23-alpine AS build
 
 # Устанавливаем нужные пакеты
@@ -15,7 +16,7 @@ COPY . .
 # Собираем бинарник
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o server main.go
 
-# Финальный минимальный образ
+# Stage 2: минимальный образ
 FROM gcr.io/distroless/static:nonroot
 
 WORKDIR /app
