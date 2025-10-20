@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: gofer
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    env_file: .env
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db
